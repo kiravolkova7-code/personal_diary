@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-0">
+    <!-- Левая колонка с заголовком -->
+    <div class="col-md-9 col-lg-7 mx-auto">
+      <div class="bg-body-secondary p-4 rounded-3 position-sticky top-0 start-0">
+        <h1 class="mb-0 fw-bold">{{ object.title }}</h1>
+        <small class="text-muted d-block">Дата: {{ object.created_at|date:"d M Y H:i" }} | Автор: {{ object.user.username }}</small>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Основная часть записи -->
+  <article class="position-relative">
+    {% if object.images.exists %}{{-- Проверяем наличие картинок --}}
+      <figure class="float-start ms-n3 me-3 mb-3">
+          {%- for img in object.images.all -%}
+              <a href="{{ img.image.url }}" data-fancybox="gallery" target="_blank">
+                  <img src="{{ img.image.url }}" alt="Превью записи" style="width: 180px; height: auto;" class="shadow-sm img-thumbnail">
+              </a>
+          {%- endfor -%}
+      </figure>
+    {% endif %}
+
+    <!-- Текст записи -->
+    <section id="markdown-content">
+      <p>{{ object.content|linebreaksbr }}</p>{# Преобразуем переводы строк в HTML-теги br #}
+    </section>
+  </article>
+
+  <!-- Для автора добавляем кнопки действий -->
+  {% if request.user == object.user %}
+    <div class="text-end mt-3">
+      <a href="{% url 'entries:entry-update' object.slug %}" class="btn btn-outline-warning btn-sm me-2">Редактировать</a>
+      <a href="{% url 'entries:entry-delete' object.slug %}" class="btn btn-danger btn-sm">Удалить</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{# Подключаем плагин FancyBox для просмотра фото во весь экран #}
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5/dist/jquery.fancybox.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5/dist/jquery.fancybox.min.js"></script>
+{% endblock %}
