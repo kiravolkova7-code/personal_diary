@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Мой дневник</h1>
+  
+  {% if entries %}
+  <!-- Карточки записей -->
+  {% for entry in entries %}
+  <div class="card shadow-sm my-3 p-3 border-light rounded-pill">
+    <div class="d-flex align-items-start gap-3">
+      <!-- Обложка записи -->
+      {% if entry.image %}
+        <img src="{{ entry.image.url }}" alt="Обложка" style="width: 80px; height: 80px;" class="rounded-circle flex-shrink-0">
+      {% else %}
+        <i class="bi bi-journal-text fs-1 text-primary"></i>
+      {% endif %}
+      
+      <div>
+        <a href="{% url 'entries:entry-detail' entry.slug %}"><strong>{{ entry.title|truncatewords:6 }}...</strong></a><br>
+        <small class="text-muted">Дата: {{ entry.created_at|date:"d M Y H:i" }}</small>
+        
+        {% if request.user == entry.user %}
+          <div class="mt-2">
+            <a href="{% url 'entries:entry-update' entry.slug %}" class="btn btn-outline-warning btn-sm me-2">Редактировать</a>
+            <a href="{% url 'entries:entry-delete' entry.slug %}" class="btn btn-danger btn-sm">Удалить</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p class="lead text-center">У вас пока нет записей.</p>
+  {% endif %}
+
+  <!-- Кнопка создания -->
+  {% if request.user.is_authenticated %}
+    <div class="text-end">
+      <a href="{% url 'entries:entry-create' %}" class="btn btn-success">Создать запись</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

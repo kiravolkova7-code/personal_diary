@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <form method="post" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="input-group mb-3">
+          <label class="input-group-text w-25">Тема</label>
+          <select name="subject" class="form-select" required>
+            <option value="">Выберите тему</option>
+            <option value="Работа">Работа</option>
+            <option value="Личное">Личное</option>
+            <option value="Путешествия">Путешествия</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text w-25">Заголовок</span>
+          <input type="text" name="title" placeholder="Название вашей записи" class="form-control" required>
+        </div>
+
+        <div class="input-group mb-3">
+          <label class="input-group-text w-25">Обложка</label>
+          <input type="file" name="image" accept="image/*" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <textarea name="content_html" rows="10" class="form-control ckeditor" placeholder="Напишите вашу историю здесь..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
