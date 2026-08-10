@@ -1,16 +1,52 @@
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.db.models import Q
+from .forms import EntryForm
 from .models import Entry
+
+
 
 class EntryListView(LoginRequiredMixin, ListView):
     """Отображает список всех записей текущего пользователя"""
     model = Entry
-    template_name = 'entry_list.html'  # Путь к шаблону
+    template_name = 'entry_list.html'
     context_object_name = 'entries'
+    paginate_by = 10  # Опционально: добавим пагинацию
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)  # Только свои записи
+        """
+        Получает базовый queryset (только свои записи)
+        и накладывает фильтр поиска, если передан GET-параметр 'q'.
+        """
+        user_entries = Entry.objects.filter(user=self.request.user).order_by('-created_at')
+
+        query = self.request.GET.get('q')
+        if query:
+            # Ищем в заголовке ИЛИ в содержании (нестрогий поиск __icontains)
+            return user_entries.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query)
+            ).distinct()  # distinct нужен, чтобы избежать дублей
+
+        return user_entries
+
+    def get_context_data(self, **kwargs):
+        """
+        Добавляем текущий поисковый запрос в контекст шаблона,
+        чтобы он не исчезал из input-поля после нажатия Enter.
+        """
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+
+        # Если используете пагинацию, полезно передать URL без параметра страницы
+        from urllib.parse import urlencode
+        params = self.request.GET.copy()
+        params.pop('page', None)  # Удаляем номер страницы, если был
+        context['search_url_params'] = urlencode(params)
+
+        return context
 
 
 class EntryDetailView(LoginRequiredMixin, DetailView):
@@ -23,25 +59,23 @@ class EntryDetailView(LoginRequiredMixin, DetailView):
 
 
 class EntryCreateView(LoginRequiredMixin, CreateView):
-    model = Entry                     # <-- Добавлено: указываем модель
-    fields = ['title', 'subject', 'content']  # <-- Добавлено: поля для формы
+    model = Entry
+    form_class = EntryForm
     template_name = "entry_form.html"
-    success_url = reverse_lazy("entry-list") # Исправлено пространство имен
+    success_url = reverse_lazy("entries:entry-list")
 
     def form_valid(self, form):
-        print("Форма валидна! Пробуем сохранить...")
         form.instance.user = self.request.user
-        result = super().form_valid(form)
-        print(f"Сохранено под ID: {self.object.id}")
-        return result
+        return super().form_valid(form)
 
 
 class EntryUpdateView(LoginRequiredMixin, UpdateView):
     model = Entry
     template_name = "entry_form.html"
+    form_class = EntryForm
+    success_url = reverse_lazy("entries:entry-list")
 
     def get_queryset(self):
-        # Ограничиваем доступ к редактированию своих записей
         base_qs = super().get_queryset()
         return base_qs.filter(user=self.request.user)
 
@@ -53,7 +87,8 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
 class EntryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """Удаление записи с подтверждением"""
     model = Entry
-    success_url = '/'  # После удаления вернёмся на главную страницу
+    # Лучше использовать именованный маршрут вместо '/'
+    success_url = reverse_lazy("entries:entry-list")
     template_name = 'entry_confirm_delete.html'
 
     def test_func(self):

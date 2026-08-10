@@ -1,44 +1,69 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-  <h1 class="text-center mb-4">Мой дневник</h1>
-  
-  {% if entries %}
-  <!-- Карточки записей -->
-  {% for entry in entries %}
-  <div class="card shadow-sm my-3 p-3 border-light rounded-pill">
-    <div class="d-flex align-items-start gap-3">
-      <!-- Обложка записи -->
-      {% if entry.image %}
-        <img src="{{ entry.image.url }}" alt="Обложка" style="width: 80px; height: 80px;" class="rounded-circle flex-shrink-0">
-      {% else %}
-        <i class="bi bi-journal-text fs-1 text-primary"></i>
-      {% endif %}
-      
-      <div>
-        <a href="{% url 'entries:entry-detail' entry.slug %}"><strong>{{ entry.title|truncatewords:6 }}...</strong></a><br>
-        <small class="text-muted">Дата: {{ entry.created_at|date:"d M Y H:i" }}</small>
-        
-        {% if request.user == entry.user %}
-          <div class="mt-2">
-            <a href="{% url 'entries:entry-update' entry.slug %}" class="btn btn-outline-warning btn-sm me-2">Редактировать</a>
-            <a href="{% url 'entries:entry-delete' entry.slug %}" class="btn btn-danger btn-sm">Удалить</a>
-          </div>
+<h1 class="h3 text-center mb-4">Мой дневник</h1>
+
+{% if user.is_authenticated %}
+  <div class="d-flex justify-content-center mb-4">
+    <form method="get" action="{% url 'entries:entry-list' %}" class="w-100" style="max-width: 600px;">
+      <div class="input-group">
+        <!-- Сохраняем значение в поле ввода -->
+        <input type="text"
+               name="q"
+               value="{{ query }}"
+               placeholder="Поиск по заголовку или тексту..."
+               class="form-control flex-grow-1">
+
+        <button type="submit" class="btn btn-outline-primary">Найти</button>
+
+        <!-- Кнопка сброса фильтра (показываем только если идет поиск) -->
+        {% if query %}
+          <a href="{% url 'entries:entry-list' %}" class="btn btn-link text-decoration-none ms-2">Сбросить</a>
         {% endif %}
       </div>
-    </div>
+    </form>
   </div>
-  {% endfor %}
-  {% else %}
-  <p class="lead text-center">У вас пока нет записей.</p>
-  {% endif %}
 
-  <!-- Кнопка создания -->
-  {% if request.user.is_authenticated %}
-    <div class="text-end">
-      <a href="{% url 'entries:entry-create' %}" class="btn btn-success">Создать запись</a>
-    </div>
+  {% if entries %}
+    {% for entry in entries %}
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <small class="text-muted-emphasis mb-2 d-block">
+            Дата: {{ entry.created_at|date:"d M Y H:i" }}
+          </small>
+
+          <!-- Обложка записи (оставлена закомментированной как в оригинале) -->
+<!--          {#-->
+<!--          {% if entry.image %}-->
+<!--            <img src="{{ entry.image.url }}" alt="Обложка" class="rounded-circle float-start me-3" width="80" height="80" style="object-fit: cover;">-->
+<!--          {% elif entry.images.exists %}-->
+<!--            {% for img in entry.images.all|slice:":1" %}-->
+<!--              <img src="{{ img.image.url }}" alt="Обложка" class="rounded-circle float-start me-3" width="80" height="80" style="object-fit: cover;">-->
+<!--            {% endfor %}-->
+<!--          {% endif %}-->
+<!--          #}-->
+
+          <h3 class="card-title h5 mb-3"><a href="{% url 'entries:entry-detail' entry.pk %}" class="text-decoration-none text-dark stretched-link">{{ entry.title }}</a></h3>
+          <p class="card-text text-muted small">{{ entry.content|truncatewords:30 }}</p>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-center text-muted py-5 border rounded bg-white">У вас пока нет записей.</p>
   {% endif %}
-</div>
+{% else %}
+  <div class="text-center p-5 border rounded bg-white mx-auto" style="max-width: 600px;">
+    <h3 class="mb-4">Войдите в аккаунт, чтобы видеть свои записи</h3>
+    <a href="{% url 'users:login' %}" class="btn btn-primary me-2">Войти</a>
+    <a href="{% url 'users:register' %}" class="btn btn-outline-primary">Регистрация</a>
+  </div>
+{% endif %}
+
+<!-- Кнопка создания -->
+{% if request.user.is_authenticated %}
+  <div class="text-end mt-4">
+    <a href="{% url 'entries:entry-create' %}" class="btn btn-success">Создать запись</a>
+  </div>
+{% endif %}
 {% endblock %}
