@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from users.forms import RegistrationForm, LoginForm
 from django.contrib.auth import views as auth_views
+from users.tasks import send_welcome_email
 
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -27,6 +28,11 @@ class RegisterView(generic.CreateView):
         """
         response = super().form_valid(form)  # Здесь происходит form.save()
         messages.success(self.request, f'Аккаунт {self.object.username} успешно создан!')
+
+        send_welcome_email.delay(
+            user_email=self.object.email,
+            username=self.object.first_name or self.object.email)
+
         return response
 
 

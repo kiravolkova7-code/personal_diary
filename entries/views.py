@@ -1,10 +1,11 @@
-# entries/views.py
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Q
 from .forms import EntryForm
 from .models import Entry
+
 
 
 class EntryListView(LoginRequiredMixin, ListView):
