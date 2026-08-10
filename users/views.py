@@ -1,40 +1,39 @@
-from .models import User
-from .serializers import UserSerializer, RegisterSerializer
-from rest_framework import generics, permissions, viewsets, status
-from rest_framework.response import Response
+from django.urls import reverse_lazy
+from django.views import generic
+from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from users.forms import RegistrationForm, LoginForm
+from django.contrib.auth import views as auth_views
 
 
-class RegisterView(generics.CreateAPIView):
-    """Регистрация нового пользователя с проверкой дубликатов."""
+@method_decorator(csrf_protect, name='dispatch')
+class RegisterView(generic.CreateView):
+    """
+    Представление для регистрации нового пользователя.
+    Использует стандартный UserCreationForm.
+    """
+    template_name = 'registration/registration.html'
+    form_class = RegistrationForm
 
-    queryset = User.objects.all()
-    permission_classes = [permissions.AllowAny]
-    serializer_class = RegisterSerializer
+    # Куда отправить пользователя ПОСЛЕ успешной регистрации
+    success_url = reverse_lazy('users:login')
 
-    def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-        except Exception as e:
-            if "email" in str(e).lower():
-                return Response(
-                    {"error": "Пользователь с таким Email уже существует."}, status=status.HTTP_400_BAD_REQUEST
-                )
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def form_valid(self, form):
+        """
+        Этот метод вызывается, когда форма валидна.
+        Сначала сохраняется пользователь (super().form_valid),
+        затем добавляется сообщение.
+        """
+        response = super().form_valid(form)  # Здесь происходит form.save()
+        messages.success(self.request, f'Аккаунт {self.object.username} успешно создан!')
+        return response
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        if self.request.user.is_staff:
-            return User.objects.all()
-        return User.objects.filter(pk=self.request.user.pk)
-
-    def get_permissions(self):
-        if self.action in ["list", "retrieve", "update", "partial_update"]:
-            return [permissions.IsAuthenticated()]
-        if self.action == "destroy":
-            return [permissions.IsAdminUser()]
-        return super().get_permissions()
+class CustomLoginView(auth_views.LoginView):
+    """
+    Кастомная вьюха входа, наследующаяся от стандартной LoginView
+    """
+    template_name = 'registration/login.html'  # Путь к вашему новому шаблону
+    authentication_form = LoginForm  # Подключаем вашу форму с чекбоксом "Запомнить меня"
+    success_url = reverse_lazy('entries:entry-list')

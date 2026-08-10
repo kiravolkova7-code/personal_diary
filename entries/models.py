@@ -31,3 +31,5 @@ class Entry(models.Model):
 
     def __str__(self):
         return f'{self.title[:30]}... от {self.user.email}'
+
+

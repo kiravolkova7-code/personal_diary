@@ -36,6 +36,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
+    first_name = models.CharField(max_length=30, default='', verbose_name="Имя")
+
     phone = models.CharField(
         max_length=20, blank=True, null=True, verbose_name="Телефон", help_text="+7 999 999 99 99"
     )
