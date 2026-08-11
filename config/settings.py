@@ -107,7 +107,7 @@ LOCALE_PATHS = [
 ]
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "/app/static"
+STATIC_ROOT = '/app/staticfiles/'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "/vol/web/media/"
