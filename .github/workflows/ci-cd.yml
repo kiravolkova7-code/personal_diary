@@ -75,7 +75,7 @@ jobs:
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             cd /home/kira_volkova_7/personal_diary
             git pull origin main || true
-            export IMAGE_TAG="${{ secrets.DOCKERHUB_USERNAME }}/personal_diary:${{ github.sha }}"
+            export IMAGE_TAG="${{ secrets.DOCKERHUB_USERNAME }}/personal_diary:latest"
             docker pull "$IMAGE_TAG"
             docker compose down
             IMAGE_TAG="$IMAGE_TAG" docker compose up -d --remove-orphans
