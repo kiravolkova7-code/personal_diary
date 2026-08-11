@@ -62,7 +62,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/personal_diary:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/personal_diary:latest
           platforms: linux/amd64
 
       - name: Update Server

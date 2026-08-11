@@ -38,7 +38,7 @@ services:
       redis:
         condition: service_started
     volumes:
-      - static_volume:/app/staticfiles/
+      - static_volume:/app/static
       - media_volume:/vol/web/media
     restart: unless-stopped
 
@@ -63,7 +63,7 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - web
     volumes:
