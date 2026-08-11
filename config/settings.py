@@ -38,7 +38,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "personal_diary.urls"
+ROOT_URLCONF = "config.urls"
 
 REDIS_URL = "redis://localhost:6379"
 
