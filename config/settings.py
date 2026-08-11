@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "users",
     "entries",
     "rest_framework",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
