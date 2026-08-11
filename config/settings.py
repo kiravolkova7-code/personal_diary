@@ -11,11 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if h.strip()
-]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h.strip()]
 
 
 INSTALLED_APPS = [
@@ -25,14 +21,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'corsheaders',
+    "corsheaders",
     "users",
     "entries",
     "rest_framework",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -69,7 +65,7 @@ if not database_url:
     raise ValueError(
         "Переменная окружения DATABASE_URL не задана. "
         "Проверьте наличие .env файла и его монтирование в docker-compose.yml"
-)
+    )
 
 DATABASES = {
     "default": dj_database_url.config(
@@ -78,7 +74,6 @@ DATABASES = {
     )
 }
 
-# Переключение на SQLite только внутри GitHub Actions
 if not DEBUG and os.getenv("GITHUB_ACTIONS"):
     DATABASES["default"] = dj_database_url.config(default="sqlite:///test.db")
 
@@ -112,7 +107,7 @@ LOCALE_PATHS = [
 ]
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
@@ -145,7 +140,6 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOW_ALL_ORIGINS = False
 
 
-
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -159,5 +153,5 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-LOGIN_REDIRECT_URL = 'entries:entry-list'
-LOGOUT_REDIRECT_URL = 'entries:entry-list'
+LOGIN_REDIRECT_URL = "entries:entry-list"
+LOGOUT_REDIRECT_URL = "entries:entry-list"

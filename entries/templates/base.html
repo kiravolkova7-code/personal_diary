@@ -14,13 +14,11 @@
     <div class="container d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-3 text-decoration-none logo-link">
         <a href="/" class="text-reset d-flex align-items-center">
-          <!-- Картинка -->
           <img
             src="{% static 'images/diary.png' %}"
             alt="Мой личный дневник"
             width="67" height="auto"
           >
-          <!-- Текст рядом с картинкой -->
           <span class="h5 mb-0 fw-bold">Мой дневник</span>
         </a>
       </div>
@@ -44,21 +42,18 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Подключение JS Bootstrap (для выпадающих меню, модалок и т.д.) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-yL4B4fG8V5s5K5l5M5n5O5p5Q5r5S5t5U5v5W5x5Y5z5A5b5C5d5E5f5G5h5I5J" crossorigin="anonymous"></script>
 
   <script>
-    // Ваш скрипт очистки токенов
     document.addEventListener('DOMContentLoaded', function() {
         const logoutBtn = document.querySelector('#logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function(event) {
-                event.preventDefault(); // Отменяем стандартное поведение формы на случай ошибки скрипта
+                event.preventDefault();
 
                 localStorage.removeItem('access');
                 localStorage.removeItem('refresh');
 
-                // Отправляем форму программно после удаления данных
                 this.closest('form').submit();
             });
         }

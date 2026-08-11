@@ -1,4 +1,3 @@
-
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -7,51 +6,42 @@ from .forms import EntryForm
 from .models import Entry
 
 
-
 class EntryListView(LoginRequiredMixin, ListView):
     """Отображает список всех записей текущего пользователя"""
+
     model = Entry
-    template_name = 'entry_list.html'
-    context_object_name = 'entries'
-    paginate_by = 10  # Опционально: добавим пагинацию
+    template_name = "entry_list.html"
+    context_object_name = "entries"
+    paginate_by = 10
 
     def get_queryset(self):
-        """
-        Получает базовый queryset (только свои записи)
-        и накладывает фильтр поиска, если передан GET-параметр 'q'.
-        """
-        user_entries = Entry.objects.filter(user=self.request.user).order_by('-created_at')
+        user_entries = Entry.objects.filter(user=self.request.user).order_by("-created_at")
 
-        query = self.request.GET.get('q')
+        query = self.request.GET.get("q")
         if query:
-            # Ищем в заголовке ИЛИ в содержании (нестрогий поиск __icontains)
-            return user_entries.filter(
-                Q(title__icontains=query) |
-                Q(content__icontains=query)
-            ).distinct()  # distinct нужен, чтобы избежать дублей
+            return user_entries.filter(Q(title__icontains=query) | Q(content__icontains=query)).distinct()
 
         return user_entries
 
     def get_context_data(self, **kwargs):
         """
-        Добавляем текущий поисковый запрос в контекст шаблона,
-        чтобы он не исчезал из input-поля после нажатия Enter.
+        Добавляем текущий поисковый запрос в контекст шаблона
         """
         context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')
+        context["query"] = self.request.GET.get("q", "")
 
-        # Если используете пагинацию, полезно передать URL без параметра страницы
         from urllib.parse import urlencode
+
         params = self.request.GET.copy()
-        params.pop('page', None)  # Удаляем номер страницы, если был
-        context['search_url_params'] = urlencode(params)
+        params.pop("page", None)
+        context["search_url_params"] = urlencode(params)
 
         return context
 
 
 class EntryDetailView(LoginRequiredMixin, DetailView):
     model = Entry
-    template_name = 'entry_detail.html'
+    template_name = "entry_detail.html"
 
     def get_queryset(self):
         base_qs = super().get_queryset()
@@ -86,11 +76,11 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
 
 class EntryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """Удаление записи с подтверждением"""
+
     model = Entry
-    # Лучше использовать именованный маршрут вместо '/'
     success_url = reverse_lazy("entries:entry-list")
-    template_name = 'entry_confirm_delete.html'
+    template_name = "entry_confirm_delete.html"
 
     def test_func(self):
         entry = self.get_object()
-        return self.request.user == entry.user  # Проверяем владельца
+        return self.request.user == entry.user

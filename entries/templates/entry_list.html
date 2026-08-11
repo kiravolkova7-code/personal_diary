@@ -7,7 +7,6 @@
   <div class="d-flex justify-content-center mb-4">
     <form method="get" action="{% url 'entries:entry-list' %}" class="w-100" style="max-width: 600px;">
       <div class="input-group">
-        <!-- Сохраняем значение в поле ввода -->
         <input type="text"
                name="q"
                value="{{ query }}"
@@ -16,7 +15,6 @@
 
         <button type="submit" class="btn btn-outline-primary">Найти</button>
 
-        <!-- Кнопка сброса фильтра (показываем только если идет поиск) -->
         {% if query %}
           <a href="{% url 'entries:entry-list' %}" class="btn btn-link text-decoration-none ms-2">Сбросить</a>
         {% endif %}
@@ -31,17 +29,6 @@
           <small class="text-muted-emphasis mb-2 d-block">
             Дата: {{ entry.created_at|date:"d M Y H:i" }}
           </small>
-
-          <!-- Обложка записи (оставлена закомментированной как в оригинале) -->
-<!--          {#-->
-<!--          {% if entry.image %}-->
-<!--            <img src="{{ entry.image.url }}" alt="Обложка" class="rounded-circle float-start me-3" width="80" height="80" style="object-fit: cover;">-->
-<!--          {% elif entry.images.exists %}-->
-<!--            {% for img in entry.images.all|slice:":1" %}-->
-<!--              <img src="{{ img.image.url }}" alt="Обложка" class="rounded-circle float-start me-3" width="80" height="80" style="object-fit: cover;">-->
-<!--            {% endfor %}-->
-<!--          {% endif %}-->
-<!--          #}-->
 
           <h3 class="card-title h5 mb-3"><a href="{% url 'entries:entry-detail' entry.pk %}" class="text-decoration-none text-dark stretched-link">{{ entry.title }}</a></h3>
           <p class="card-text text-muted small">{{ entry.content|truncatewords:30 }}</p>
@@ -60,7 +47,6 @@
   </div>
 {% endif %}
 
-<!-- Кнопка создания -->
 {% if request.user.is_authenticated %}
   <div class="text-end mt-4">
     <a href="{% url 'entries:entry-create' %}" class="btn btn-success">Создать запись</a>

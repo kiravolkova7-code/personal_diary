@@ -8,17 +8,18 @@ from django.contrib.auth import views as auth_views
 from users.tasks import send_welcome_email
 
 
-@method_decorator(csrf_protect, name='dispatch')
+@method_decorator(csrf_protect, name="dispatch")
 class RegisterView(generic.CreateView):
     """
     Представление для регистрации нового пользователя.
     Использует стандартный UserCreationForm.
     """
-    template_name = 'registration/registration.html'
+
+    template_name = "registration/registration.html"
     form_class = RegistrationForm
 
     # Куда отправить пользователя ПОСЛЕ успешной регистрации
-    success_url = reverse_lazy('users:login')
+    success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
         """
@@ -27,11 +28,9 @@ class RegisterView(generic.CreateView):
         затем добавляется сообщение.
         """
         response = super().form_valid(form)  # Здесь происходит form.save()
-        messages.success(self.request, f'Аккаунт {self.object.username} успешно создан!')
+        messages.success(self.request, f"Аккаунт {self.object.username} успешно создан!")
 
-        send_welcome_email.delay(
-            user_email=self.object.email,
-            username=self.object.first_name or self.object.email)
+        send_welcome_email.delay(user_email=self.object.email, username=self.object.first_name or self.object.email)
 
         return response
 
@@ -40,6 +39,7 @@ class CustomLoginView(auth_views.LoginView):
     """
     Кастомная вьюха входа, наследующаяся от стандартной LoginView
     """
-    template_name = 'registration/login.html'  # Путь к вашему новому шаблону
+
+    template_name = "registration/login.html"  # Путь к вашему новому шаблону
     authentication_form = LoginForm  # Подключаем вашу форму с чекбоксом "Запомнить меня"
-    success_url = reverse_lazy('entries:entry-list')
+    success_url = reverse_lazy("entries:entry-list")
