@@ -35,7 +35,7 @@ MANIFEST
 *.log
 
 # Исключаем медиафайлы и статику, собранные локально
-staticfiles/
+#staticfiles/
 #static/
 #media/
 
