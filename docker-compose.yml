@@ -37,7 +37,7 @@ services:
       redis:
         condition: service_started
     volumes:
-      - static_volume:/vol/web/static
+      - ./static_volume:/app/staticfile
       - media_volume:/vol/web/media
     restart: unless-stopped
 
