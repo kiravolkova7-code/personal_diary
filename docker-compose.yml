@@ -24,8 +24,6 @@ services:
 
   web:
     image: ${IMAGE_TAG:-${DOCKERHUB_USERNAME:-kiravolkova7}/personal_diary:latest}
-    environment:
-      - PYTHONPATH=/app:$PYTHONPATH
     env_file: .env
     command: >
       sh -c "python manage.py migrate --noinput &&
@@ -45,8 +43,6 @@ services:
 
   celery_worker:
     image: ${IMAGE_TAG:-${DOCKERHUB_USERNAME}/personal_diary:latest}
-    environment:
-      - PYTHONPATH=/app:$PYTHONPATH
     command: celery -A config worker -l info
     env_file: .env
     depends_on:
@@ -56,8 +52,6 @@ services:
 
   celery_beat:
     image: ${IMAGE_TAG:-${DOCKERHUB_USERNAME}/personal_diary:latest}
-    environment:
-      - PYTHONPATH=/app:$PYTHONPATH
     command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     env_file: .env
     depends_on:
