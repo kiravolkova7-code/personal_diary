@@ -38,6 +38,7 @@ services:
       redis:
         condition: service_started
     volumes:
+      - ./static:/app/static
       - static_volume:/app/staticfiles
       - media_volume:/vol/web/media
     restart: unless-stopped
@@ -67,7 +68,7 @@ services:
     depends_on:
       - web
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/staticfiles:ro
       - media_volume:/vol/media:ro
     restart: unless-stopped
