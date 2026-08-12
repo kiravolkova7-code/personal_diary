@@ -82,5 +82,5 @@ jobs:
             sleep 10
             docker compose exec -T web python manage.py migrate --noinput
             docker compose exec -T web python manage.py collectstatic --noinput
-            
+            docker compose restart nginx
             
