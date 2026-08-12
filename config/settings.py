@@ -29,8 +29,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -127,13 +127,13 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://62.84.120.41",
+    "http://62.84.120.41:8000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://62.84.120.41",
+    "http://62.84.120.41:8000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
