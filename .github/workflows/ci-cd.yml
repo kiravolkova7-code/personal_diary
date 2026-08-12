@@ -78,9 +78,11 @@ jobs:
             export IMAGE_TAG="${{ secrets.DOCKERHUB_USERNAME }}/personal_diary:latest"
             docker pull "$IMAGE_TAG"
             docker compose down
+            git fetch origin develop
+            git checkout develop
+            git reset --hard origin/develop
             IMAGE_TAG="$IMAGE_TAG" docker compose up -d --remove-orphans
             sleep 10
             docker compose exec -T web python manage.py migrate --noinput
             docker compose exec -T web python manage.py collectstatic --noinput
             docker compose restart nginx
-            
