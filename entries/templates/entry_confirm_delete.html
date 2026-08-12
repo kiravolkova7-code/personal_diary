@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card mx-auto" style="max-width: 600px; padding: 3rem;">
+        <h3 class="mb-3">Подтвердите удаление</h3>
+        <p><strong>Вы действительно хотите удалить запись "{{ object.title }}"?</strong></p>
+        <p class="text-muted">Это действие нельзя будет отменить.</p>
+
+        <form method="post" class="mt-4 d-flex justify-content-between">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}"/>
+            <a href="{% url 'entries:entry-list' %}" class="btn btn-outline-secondary">Нет, вернуться назад</a>
+            <button type="submit" class="btn btn-danger">Да, удалить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

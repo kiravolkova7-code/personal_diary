@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="h3 text-center mb-4">Мой дневник</h1>
+
+{% if user.is_authenticated %}
+  <div class="d-flex justify-content-center mb-4">
+    <form method="get" action="{% url 'entries:entry-list' %}" class="w-100" style="max-width: 600px;">
+      <div class="input-group">
+        <input type="text"
+               name="q"
+               value="{{ query }}"
+               placeholder="Поиск по заголовку или тексту..."
+               class="form-control flex-grow-1">
+
+        <button type="submit" class="btn btn-outline-primary">Найти</button>
+
+        {% if query %}
+          <a href="{% url 'entries:entry-list' %}" class="btn btn-link text-decoration-none ms-2">Сбросить</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  {% if entries %}
+    {% for entry in entries %}
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <small class="text-muted-emphasis mb-2 d-block">
+            Дата: {{ entry.created_at|date:"d M Y H:i" }}
+          </small>
+
+          <h3 class="card-title h5 mb-3"><a href="{% url 'entries:entry-detail' entry.pk %}" class="text-decoration-none text-dark stretched-link">{{ entry.title }}</a></h3>
+          <p class="card-text text-muted small">{{ entry.content|truncatewords:30 }}</p>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-center text-muted py-5 border rounded bg-white">У вас пока нет записей.</p>
+  {% endif %}
+{% else %}
+  <div class="text-center p-5 border rounded bg-white mx-auto" style="max-width: 600px;">
+    <h3 class="mb-4">Войдите в аккаунт, чтобы видеть свои записи</h3>
+    <a href="{% url 'users:login' %}" class="btn btn-primary me-2">Войти</a>
+    <a href="{% url 'users:register' %}" class="btn btn-outline-primary">Регистрация</a>
+  </div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+  <div class="text-end mt-4">
+    <a href="{% url 'entries:entry-create' %}" class="btn btn-success">Создать запись</a>
+  </div>
+{% endif %}
+{% endblock %}
