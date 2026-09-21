@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .registration-form .form-control {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .avatar-upload-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .avatar-preview-box {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: var(--bs-secondary-bg);
+        border: 1px dashed var(--bs-border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875em;
+        color: var(--bs-tertiary-color);
+    }
+
+    .avatar-preview-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+
+<div class="container col-md-6 col-lg-4 border p-4 rounded shadow-sm">
+    <h2 class="text-center mb-4">Регистрация</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger mb-3">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <!-- enctype обязателен для загрузки файлов -->
+    <form method="post" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-3">
+
+            <!-- Аватар (вне сетки row/g-3 для гибкости) -->
+            <div class="col-12">
+                <div class="avatar-upload-wrapper">
+                    <div id="avatar-preview" class="avatar-preview-box">
+                        Загрузить фото
+                    </div>
+                    {{ form.avatar }}
+                </div>
+                {% if form.avatar.errors %}
+                    <div class="text-danger small mt-1">{{ form.avatar.errors }}</div>
+                {% endif %}
+                {% if form.avatar.help_text %}<small class="text-muted d-block mt-1">{{ form.avatar.help_text }}</small>{% endif %}
+            </div>
+
+            <!-- Текстовые поля (внутри сетки) -->
+            <div class="col-12 position-relative">
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger small mt-1">{% for e in form.first_name.errors %}{{ e }}<br>{% endfor %}</div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 position-relative">
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger small mt-1">{% for e in form.email.errors %}{{ e }}<br>{% endfor %}</div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 position-relative">
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="text-danger small mt-1">{% for e in form.phone.errors %}{{ e }}<br>{% endfor %}</div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 position-relative">
+                {{ form.city }}
+                {% if form.city.errors %}
+                    <div class="text-danger small mt-1">{% for e in form.city.errors %}{{ e }}<br>{% endfor %}</div>
+                {% endif %}
+            </div>
+
+            <!-- Пароли всегда внизу перед кнопкой -->
+            <div class="col-12 position-relative">
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="text-danger small mt-1">{% for e in form.password1.errors %}{{ e }}<br>{% endfor %}</div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 position-relative">
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="text-danger small mt-1">{% for e in form.password2.errors %}{{ e }}<br>{% endfor %}</div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-4">Зарегистрироваться</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.querySelector('#id_avatar');
+    const avatarPreview = document.getElementById('avatar-preview');
+
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Предпросмотр">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                avatarPreview.innerHTML = 'Загрузить фото';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

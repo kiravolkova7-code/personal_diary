@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="border-bottom pb-3 mb-4">
+  <h1 class="mb-1">{{ object.title }}</h1>
+  <small class="text-muted-emphasis">
+    Дата: {{ object.created_at|date:"d M Y H:i" }} | Автор: {{ object.user.username }}
+  </small>
+</div>
+
+<article>
+  {% if object.images.exists %}
+    <div class="mb-4">
+      {% for img in object.images.all %}
+        <img src="{{ img.image.url }}" alt="Фото из записи" class="img-fluid rounded mb-3">
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <p class="lh-lg">{{ object.content|linebreaksbr }}</p>
+</article>
+
+{% if request.user == object.user %}
+  <div class="mt-4 pt-3 border-top d-flex gap-2">
+    <a href="{% url 'entries:entry-update' object.pk %}" class="btn btn-warning btn-sm px-3">
+      Редактировать
+    </a>
+    <a href="{% url 'entries:entry-delete' object.pk %}?next={{ request.path }}" class="btn btn-danger btn-sm px-3">
+      Удалить
+    </a>
+  </div>
+{% endif %}
+{% endblock %}
